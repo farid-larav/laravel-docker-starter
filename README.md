@@ -1,58 +1,209 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Docker Starter
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A reusable Laravel development starter powered by Docker Compose.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Technology | Version | Purpose |
+|---|---|---|
+| Laravel | 13 | PHP framework |
+| PHP | 8.4 | Backend runtime |
+| MySQL | 8.4 | Database |
+| phpMyAdmin | 5.2 | Database management |
+| Node.js | 24 LTS | Frontend tooling |
+| Vite | Project lockfile | Frontend asset bundling |
+| Tailwind CSS | Project lockfile | CSS framework |
+| Docker Compose | V2 | Container orchestration |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Docker Desktop with Docker Compose
+- WSL 2 with Ubuntu (recommended on Windows)
+- VS Code with WSL extension (recommended)
+- Git
 
-## Learning Laravel
+PHP, Composer, MySQL and Node.js do not need to be installed directly on the host.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Getting Started
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Create a new project
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Create a new repository using this GitHub template, then clone it:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/YOUR_USERNAME/YOUR_PROJECT.git
+cd YOUR_PROJECT
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Configure environment variables
 
-## Contributing
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Open `.env` and configure:
 
-## Code of Conduct
+```dotenv
+APP_NAME="My Laravel App"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+APP_KEY=
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=laravel_db
+DB_USERNAME=laravel
+DB_PASSWORD=your_local_db_password
 
-## Security Vulnerabilities
+MYSQL_ROOT_PASSWORD=your_local_root_password
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+HOST_UID=1000
+HOST_GID=1000
+```
+
+Replace the example passwords. Preserve the additional Laravel settings already present in `.env`.
+
+Set `HOST_UID` and `HOST_GID` to the output of:
+
+```bash
+id -u
+id -g
+```
+
+Docker Compose reads the environment values from `.env`.
+
+**Important:** MySQL initialization credentials only take effect when the database volume is first initialized.
+
+### 3. Build the PHP image
+
+```bash
+docker compose build app
+```
+
+### 4. Install PHP dependencies
+
+```bash
+docker compose run --rm --no-deps \
+  -e COMPOSER_HOME=/tmp/composer \
+  app composer install
+```
+
+### 5. Install frontend dependencies
+
+```bash
+docker compose run --rm --no-deps node npm ci
+```
+
+### 6. Start the containers
+
+```bash
+docker compose up -d
+```
+
+Check the status:
+
+```bash
+docker compose ps
+```
+
+MySQL should become healthy, and the application, phpMyAdmin and Node.js services should be running.
+
+### 7. Generate the application key
+
+```bash
+docker compose exec app php artisan key:generate
+```
+
+### 8. Run database migrations
+
+```bash
+docker compose exec app php artisan migrate
+```
+
+### 9. Open the application
+
+| Service | Address |
+|---|---|
+| Laravel | http://localhost:8000 |
+| phpMyAdmin | http://localhost:8080 |
+| Vite | http://localhost:5173 |
+| MySQL (host access) | 127.0.0.1:3307 |
+
+To log in to phpMyAdmin, use the `DB_USERNAME` and `DB_PASSWORD` defined in your `.env` file.
+
+## Common Docker Commands
+
+| Task | Command |
+|---|---|
+| Start services | `docker compose up -d` |
+| Stop services | `docker compose down` |
+| Check status | `docker compose ps` |
+| View logs | `docker compose logs -f` |
+| Run Artisan | `docker compose exec app php artisan` |
+| Run migrations | `docker compose exec app php artisan migrate` |
+| Run tests | `docker compose exec app php artisan test` |
+| Install PHP package | `docker compose exec app composer require vendor/package` |
+| Install NPM package | `docker compose exec node npm install package` |
+| Build frontend assets | `docker compose run --rm --no-deps node npm run build` |
+
+## Development
+
+Laravel uses the PHP development server on port 8000.
+
+The Node.js container runs Vite on port 5173, supporting frontend hot module replacement.
+
+Update PHP, Blade, CSS and JavaScript files using VS Code connected to WSL Ubuntu.
+
+## Database Persistence
+
+MySQL data is stored in a Docker named volume.
+
+Running:
+
+```bash
+docker compose down
+```
+
+stops and removes the containers but preserves the database volume.
+
+**Warning:** Running `docker compose down -v` can permanently remove the database volume and its contents.
+
+## Repository Structure
+
+```text
+app/
+bootstrap/
+config/
+database/
+docker/
+  php/
+    Dockerfile
+public/
+resources/
+routes/
+storage/
+tests/
+.env.example
+.gitignore
+compose.yaml
+composer.json
+composer.lock
+package.json
+package-lock.json
+vite.config.js
+```
+
+## Security Notes
+
+- Never commit `.env` or real database passwords.
+- Generate a new `APP_KEY` for each project.
+- Use unique database credentials for each project.
+- Keep `APP_DEBUG=true` restricted to local development.
+- Do not expose local development services publicly.
+- The built-in PHP development server and Vite server are not intended for production deployments.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This starter is available under the MIT license.
