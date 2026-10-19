@@ -31,7 +31,7 @@ PHP, Composer, MySQL and Node.js do not need to be installed directly on the hos
 Create a new repository using this GitHub template, then clone it:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_PROJECT.git
+git clone https://github.com/farid-larav/laravel-docker-starter.git
 cd YOUR_PROJECT
 ```
 
