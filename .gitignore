@@ -1,0 +1,100 @@
+
+# ==================================================
+# Laravel Docker Starter - Git Ignore
+# ==================================================
+
+# --------------------------------------------------
+# 1. Environment variables & secrets
+# --------------------------------------------------
+.env
+.env.*
+!.env.example
+/auth.json
+
+
+# --------------------------------------------------
+# 2. PHP / Composer dependencies
+# --------------------------------------------------
+/vendor
+
+
+# --------------------------------------------------
+# 3. Node.js / NPM dependencies
+# --------------------------------------------------
+/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# --------------------------------------------------
+# 4. Laravel runtime & generated files
+# --------------------------------------------------
+/public/hot
+/public/build
+/public/storage
+/public/fonts-manifest.dev.json
+
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/pail
+
+# Preserve Laravel runtime directories
+!/storage/logs/.gitignore
+!/storage/framework/cache/.gitignore
+!/storage/framework/sessions/.gitignore
+!/storage/framework/testing/.gitignore
+!/storage/framework/views/.gitignore
+
+
+# --------------------------------------------------
+# 5. Local databases
+# --------------------------------------------------
+*.sqlite
+*.sqlite-journal
+
+
+# --------------------------------------------------
+# 6. Logs & temporary files
+# --------------------------------------------------
+*.log
+*.tmp
+*.bak
+
+
+# --------------------------------------------------
+# 7. Testing & development artifacts
+# --------------------------------------------------
+.phpunit.result.cache
+/.phpunit.cache
+/.phpactor.json
+_ide_helper.php
+
+
+# --------------------------------------------------
+# 8. IDEs & editor configurations
+# --------------------------------------------------
+/.idea
+/.vscode
+/.nova
+/.zed
+/.cursor
+/.codex
+
+
+# --------------------------------------------------
+# 9. Operating system files
+# --------------------------------------------------
+.DS_Store
+Thumbs.db
+
+
+# --------------------------------------------------
+# 10. Legacy development environments
+# --------------------------------------------------
+Homestead.json
+Homestead.yaml

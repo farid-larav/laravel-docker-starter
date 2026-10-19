@@ -1,0 +1,79 @@
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/html
+    user: "${HOST_UID:-1001}:${HOST_GID:-1001}"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - laravel_network
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysqladmin ping -h 127.0.0.1 -u root --silent
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - laravel_network
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - laravel_network
+  
+  node:
+    image: node:24-bookworm-slim
+    working_dir: /var/www/html
+    user: "${HOST_UID:-1001}:${HOST_GID:-1001}"
+    environment:
+      HOME: /tmp
+      NPM_CONFIG_CACHE: /tmp/.npm    
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ./:/var/www/html
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    networks:
+      - laravel_network
+    
+
+networks:
+  laravel_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
