@@ -9,7 +9,8 @@ services:
     working_dir: /var/www/html
     user: "${HOST_UID:-1001}:${HOST_GID:-1001}"
     ports:
-      - "127.0.0.1:8000:8000"
+      # - "127.0.0.1:8000:8000" make it dynamic so that it can be changed in the .env file
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
     volumes:
       - ./:/var/www/html
     depends_on:
@@ -27,7 +28,8 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "127.0.0.1:3307:3306"
+      # - "127.0.0.1:3307:3306" make it dynamic so that it can be changed in the .env file
+      - "127.0.0.1:${MYSQL_FORWARD_PORT:-3307}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -48,7 +50,8 @@ services:
       PMA_HOST: mysql
       PMA_PORT: 3306
     ports:
-      - "127.0.0.1:8080:80"
+      # - "127.0.0.1:8080:80"
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8080}:80"
     depends_on:
       mysql:
         condition: service_healthy
@@ -63,7 +66,8 @@ services:
       HOME: /tmp
       NPM_CONFIG_CACHE: /tmp/.npm    
     ports:
-      - "127.0.0.1:5173:5173"
+      # - "127.0.0.1:5173:5173"
+      - "127.0.0.1:${VITE_PORT:-5173}:5173"
     volumes:
       - ./:/var/www/html
     command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
