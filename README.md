@@ -434,8 +434,4 @@ Additional standard Laravel files and directories may be present.
 
 ## License
 
-<<<<<<< HEAD
-This project is intended to be distributed under the MIT License. See the `LICENSE` file when included.
-=======
-This starter is available under the MIT license.
->>>>>>> 2cda0060b96eb8b08818c91b46a8f55077df8126
+This project is intended to be distributed under the MIT License.
